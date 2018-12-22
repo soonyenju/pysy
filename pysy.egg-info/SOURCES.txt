@@ -1,5 +1,7 @@
 README.txt
 setup.py
+pysy/__init__.py
+pysy/scigeo.py
 pysy.egg-info/PKG-INFO
 pysy.egg-info/SOURCES.txt
 pysy.egg-info/dependency_links.txt
