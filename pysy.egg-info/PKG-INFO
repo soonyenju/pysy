@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: pysy
+Version: 0.0.1
+Summary: For faster proccessing geofile
+Home-page: https://github.com/soonyenju/pysy
+Author: soonyenju
+Author-email: soonyenju@foxmail.com
+License: MIT Licence
+Description: Read/write and process rs/gis related data, especially atmospheric rs data.
+Keywords: pip,geo-processing,GDAL,raster-file,shapefile,soonyenju
+Platform: any
