@@ -1,4 +1,3 @@
-python_hdf4==0.9
 numpy==1.14.2
 pandas==0.20.1
 GDAL==2.2.4

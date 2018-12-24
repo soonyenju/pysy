@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name = "pysy",
-	version = "0.0.5",
+	version = "0.0.6",
 	keywords = ("pip", "geo-processing","GDAL", "raster-file", "shapefile", "soonyenju"),
 	description = "For faster proccessing geofile",
 	long_description = "Read/write and process rs/gis related data, especially atmospheric rs data.",
@@ -27,7 +27,6 @@ setup(
 	include_package_data = True,
 	platforms = "any",
 	install_requires=[
-			'python_hdf4 == 0.9',
             'numpy == 1.14.2',
             'pandas == 0.20.1',
             'GDAL == 2.2.4',
