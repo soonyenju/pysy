@@ -109,6 +109,7 @@ class Raster(object):
         for band in range(bands):
             outband = ds.GetRasterBand(band + 1)
             outband.WriteArray(array[band, :, :])
+            outband.SetNoDataValue(-9999) # NOTICE: maybe not work
             outband.FlushCache()
         del(ds)
 
