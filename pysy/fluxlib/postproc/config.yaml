@@ -1,0 +1,16 @@
+sources:
+  flux:
+    description: EdiRe fluxes
+    driver: csv
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/{{ FILE_NAME }}.csv'
+      keys: 'Date/Time, Hc, cLEc, bLEc, Fcc'
+    constants: 
+      hemi_seasons: {3: 'spring',  4: 'spring',  5: 'spring',
+                    6: 'summer',  7: 'summer',  8: 'summer',
+                    9: 'fall',   10: 'fall',   11: 'fall',
+                    12: 'winter',  1: 'winter',  2: 'winter'}
+      semi_seasons: {3: 'fall',    4: 'fall',    5: 'fall',
+                    6: 'winter',  7: 'winter',  8: 'winter',
+                    9: 'spring', 10: 'spring', 11: 'spring',
+                    12: 'summer',  1: 'summer',  2: 'summer'}

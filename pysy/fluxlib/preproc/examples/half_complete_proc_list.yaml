@@ -1,0 +1,105 @@
+
+eddy_proc_list:
+  - 
+    - location_output_files
+    -
+      - {
+          dCalc: G:\OneDrive - University of Exeter\Data\New_Roth_results\North\Roth_N.csv,
+          dSpec: G:\OneDrive - University of Exeter\Data\New_Roth_results\North\Roth_N_Spec.csv
+        }
+  -
+    - comments
+    -
+      - {cmt1: Extract the data}
+  -
+    - extract
+    -
+      - {chn: 4, label: vCO2}
+      - {chn: 5, label: vCO2uc}
+      - {chn: 6, label: vT}
+      - {chn: 7, label: cP}
+      - {chn: 8, label: cDelP}
+      - {chn: 9, label: cT}
+      - {chn: 10, label: cRH}
+      - {chn: 11, label: bT}
+      - {chn: 12, label: bRH}
+      - {chn: 13, label: iT}
+      - {chn: 14, label: Ux}
+      - {chn: 15, label: Uy}
+      - {chn: 16, label: Uz}
+      - {chn: 17, label: Ts}
+      - {chn: 18, label: Ds}
+      - {chn: 19, label: Heater}
+      - {chn: 20, label: PIDduty}
+  -
+    - comments
+    - 
+      - {cmt1: Convert cell (c) and block (b) RH's to absolute densities}
+
+  -
+    - extract
+    -
+      - {chn: 10, label: cH2O}
+      - {chn: 10, label: c_e}
+      - {chn: 12, label: bH2O}
+      - {chn: 12, label: b_e}
+  -
+    - gas_conversion_time_series
+    -
+      - {sig: cH2O, conFrom: Relative humidity, conTo: Absolute density g/m3, sigTC: cT, valPkPa: cP}
+      - {sig: c_e, conFrom: Relative humidity, conTo: Partial Pressure kPa, sigTC: cT, valPkPa: cP}
+      - {sig: bH2O, conFrom: Relative humidity, conTo: Absolute density g/m3, sigTC: bT, valPkPa: cP}
+      - {sig: b_e, conFrom: Relative humidity, conTo: Partial Pressure kPa, sigTC: bT, valPkPa: cP}
+
+  -
+    - comments
+    -
+      - {cmt1: Clean data}
+
+  -
+    - despike
+    -
+      - {sig: Ts, replaceSpikes: x}
+  -
+    - despike_vickers
+    -
+      - {sig: Ts, count_ts_vickers: count_Ts_Vickers}
+  -
+    - comments
+    -
+      - {cmt1: Calculate some means}
+  -
+    - one_chn_statistics
+    -
+      - {sig: vCO2, SLmean: mean_vCO2}
+      - {sig: vCO2uc, SLmean: mean_vCO2uc}
+      - {sig: vT, SLmean: mean_vT}
+      - {sig: cP, SLmean: mean_cP}
+      - {sig: cDelP, SLmean: mean_cDelP}
+      - {sig: cT, SLmean: mean_cT}
+      - {sig: bT, SLmean: mean_bT}
+      - {sig: bRH, SLmean: mean_bRH}
+      - {sig: iT, SLmean: mean_iT}
+      - {sig: Ux, SLmean: mean_Ux_pre_rot}
+      - {sig: Uy, SLmean: mean_Uy_pre_rot}
+      - {sig: Uz, SLmean: mean_Uz_pre_rot}
+      - {sig: Ds, SLmean: mean_Ds}
+      - {sig: Ts, SLmean: mean_Ts_virt}
+      - {sig: Heater, SLmean: mean_Heater}
+      - {sig: PIDduty, SLmean: mean_PIDduty}
+      - {sig: cH2O, SLmean: mean_cH2O}
+      - {sig: bH2O, SLmean: mean_bH2O}
+  -
+    - virtual_temperature_raw
+    -
+      - {sig: Ts, sigH2O: bH2O, PKpa: mean_cP}
+  -
+    - one_chn_statistics
+    - 
+      - {sig: Ts, SLmean: mean_Ts}
+      - {sig: c_e, SLmean: mean_c_e}
+      - {sig: b_e, SLmean: mean_b_e}
+  -
+    - comments
+    -
+      - {cmt1: Plot some of the means}

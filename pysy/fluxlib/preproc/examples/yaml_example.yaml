@@ -1,0 +1,84 @@
+# an example of YAML
+
+animal: pets
+hash: { name: Steve, foo: bar } 
+thePets:
+  -
+    - Cat
+    - Dog
+  -
+    - Goldfish
+mostanimals: [Cat, Dog]
+
+languages:
+ - Ruby
+ - Perl
+ - Python 
+websites:
+ YAML: yaml.org 
+ Ruby: ruby-lang.org 
+ Python: python.org 
+ Perl: use.perl.org 
+
+
+number: 12.30
+isSet: true
+
+parent: ~ 
+
+iso8601: 2001-12-14t21:59:43.10-05:00 
+
+date: 1976-07-31
+
+e: !!str 123
+f: !!str true
+
+str: this is a string
+
+str: 'content: string'
+
+s1: 'content\nstring'
+s2: "content\nstring"
+
+str: 'labor''s day' 
+
+str: this is a
+  mulitline
+  string
+
+this: |
+  Foo
+  Bar
+that: >
+  Foo
+  Bar
+
+s1: |
+  Foo
+
+s2: |+
+  Foo
+
+
+s3: |-
+  Foo
+
+
+defaults: &defaults
+  adapter:  postgres
+  host:     localhost
+
+development:
+  database: myapp_development
+  <<: *defaults
+
+test:
+  database: myapp_test
+  <<: *defaults
+
+a: 
+  - &showell Steve 
+  - Clark 
+  - Brian 
+  - Oren 
+  - *showell 

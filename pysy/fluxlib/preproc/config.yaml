@@ -1,0 +1,197 @@
+outdir:
+  {
+    dCalc: G:\OneDrive - University of Exeter\Data\New_Roth_results\North\Roth_N.csv,
+    dSpec: G:\OneDrive - University of Exeter\Data\New_Roth_results\North\Roth_N_Spec.csv
+  }
+
+vars:
+  {
+    labels: [vCO2, vCO2uc, vT, cP, cDelP, cT, cRH, bT, bRH, iT, Ux, Uy, Uz, Ts, Ds, Heater, PIDduty],
+    pos_begin: 4
+  }
+
+humidity_unit_conv:
+  [
+    {sig: cH2O, conFrom: Relative humidity, conTo: Absolute density g/m3, sigTC: cT, sigPkPa: cP},
+    {sig: c_e, conFrom: Relative humidity, conTo: Partial Pressure kPa, sigTC: cT, sigPkPa: cP},
+    {sig: bH2O, conFrom: Relative humidity, conTo: Absolute density g/m3, sigTC: bT, sigPkPa: cP},
+    {sig: b_e, conFrom: Relative humidity, conTo: Partial Pressure kPa, sigTC: bT, sigPkPa: cP}
+  ]
+
+plot_mean:
+  - {LVal: mean_vCO2, RVal: mean_vCO2uc, match: x}
+  - {LVal: mean_cT, RVal: mean_vT, match: x}
+  - {LVal: mean_bT, RVal: mean_cT, match: x}
+  - {LVal: mean_PIDduty, RVal: mean_iT}
+  - {LVal: mean_Ux_pre_rot, RVal: mean_Uy_pre_rot, match: x}
+  - {LVal: mean_Ts, RVal: mean_Ts_virt, match: x}
+  - {LVal: mean_bRH, RVal: mean_cRH, match: x}
+  - {LVal: mean_bH2O, RVal: mean_cH2O, match: x}
+  - {LVal: mean_cP, match: x}
+  - {LVal: mean_c_e, RVal: mean_b_e, match: x}
+
+cross_corr:
+  - {sig: Uz, sigLag: cH2O, SLPeakTime: cH2Oxcor}
+  - {sig: Uz, sigLag: bH2O, SLPeakTime: bH2Oxcor}
+  - {sig: Uz, sigLag: vCO2, SLPeakTime: CO2xcor}
+  - {sig: Uz, sigLag: Ts, SLPeakTime: Tsxcor}
+
+remove_lag:
+  - {sig: vCO2, minLagS: 7, lagS: 7, maxLagS: 7, belowMinDefault: 7, belowMaxDefault: 7}
+  - {sig: bH2O, minLagS: 4, lagS: 4, maxLagS: 1, belowMinDefault: 4, belowMaxDefault: 4}
+  - {sig: cH2O, minLagS: 7, lagS: 7, maxLagS: 7, belowMinDefault: 7, belowMaxDefault: 7}
+
+co2_umol2density:
+  - {
+    sig: vCO2,
+    conFrom: Concentration umol/mol,
+    conTo: Molar density umol/m3,
+    sigTC: vT,
+    sigPkPa: cP,
+    sigH2O: c_e,
+    unitsH2O: Partial pressure kPa,
+    moleWeight: 44
+  }
+
+cal_flux_coef:
+  - {sig1: Uz, sig2: Ts, SLFlux: H, fluxCoef: rhocp}
+  - {sig1: Uz, sig2: vCO2, SLFlux: Fc, fluxCoef: 1}
+  - {sig1: Uz, sig2: bH2O, SLFlux: bLE, fluxCoef: lambda}
+  - {sig1: Uz, sig2: cH2O, SLFlux: cLE, fluxCoef: lambda}
+
+plot_flux:
+  - {LVal: cLE, RVal: bLE, match: x}
+  - {LVal: H, RVal: Fc}
+
+tube_atten:
+  - {
+      SLable: TubeAtten_CO2, gasSpecies: CO2, tubePres: mean_cP, 
+      flowRate: 2.5, tubeLen: 6, tubeID: 0.004318
+    }
+  - {
+      SLable: TubeAtten_H2O, gasSpecies: H2O, tubePres: mean_cP, 
+      flowRate: 2.5, tubeLen: 6, tubeID: 0.004318
+    }
+
+set_values:
+  {
+    Height: 5,
+    sonic_path: 0.1,
+    zero_plane: 0.2,
+    sample_freq: 10,
+    Sonic_irga_sep: 0.185,
+    intake_path: 0.005,
+    Vc_tau: 1.36,
+    Vq_tau: 2
+  }
+
+monin_obhukov:
+  {
+    SLable: MO_stability,
+    measHeight: Height,
+    zeroPlaneDisp: zero_plane,
+    virtualTemp: mean_Ts,
+    HFlux: H,
+    HFluxCoef: rhocp,
+    fVelo: friction_velocity
+  }
+
+freq_resp:
+  - {
+    SLable: Freq_resp_Fc,
+    corrType: WX,
+    measHeight: Height,
+    zeroPlaneDisp: zero_plane,
+    boundLyrHeight: 1000,
+    stability: MO_stability,
+    windSpeed: mean_Wind_Spd,
+    sen1FlowVelo: mean_Wind_Spd,
+    sen1SampFreq: sample_freq,
+    sen1PathLen: sonic_path,
+    sen1TimeConstant: 0.1,
+    sen2FlowVelo: mean_Wind_Spd,
+    sen2SampFreq: sample_freq,
+    sen2PathLen: irga_path2,
+    sen2TimeConstant: Vc_tau,
+    sen2TubeAttenuCoef: TubeAtten_CO2,
+    pathSepera: Sonic_irga_sep,
+    getSpecDataType: Model,
+    getRespFuncFrom: model
+  }
+  - {
+    SLable: Freq_resp_LE,
+    corrType: WX,
+    measHeight: Height,
+    zeroPlaneDisp: zero_plane,
+    boundLyrHeight: 1000,
+    stability: MO_stability,
+    windSpeed: mean_Wind_Spd,
+    sen1FlowVelo: mean_Wind_Spd,
+    sen1SampFreq: sample_freq,
+    sen1PathLen: sonic_path,
+    sen1TimeConstant: 0.1,
+    sen2FlowVelo: mean_Wind_Spd,
+    sen2SampFreq: sample_freq,
+    sen2PathLen: irga_path2,
+    sen2TimeConstant: Vq_tau,
+    sen2TubeAttenuCoef: TubeAtten_H2O,
+    pathSepera: Sonic_irga_sep,
+    getSpecDataType: Model,
+    getRespFuncFrom: model
+  }
+  - {
+    SLable: Freq_resp_H,
+    corrType: WX,
+    measHeight: Height,
+    zeroPlaneDisp: zero_plane,
+    boundLyrHeight: 1000,
+    stability: MO_stability,
+    windSpeed: mean_Wind_Spd,
+    sen1FlowVelo: mean_Wind_Spd,
+    sen1SampFreq: sample_freq,
+    sen1PathLen: sonic_path,
+    sen1TimeConstant: 0.1,
+    sen2FlowVelo: mean_Wind_Spd,
+    sen2SampFreq: sample_freq,
+    sen2PathLen: sonic_path,
+    sen2TimeConstant: 0.1,
+    pathSepera: 0,
+    getSpecDataType: Model,
+    getRespFuncFrom: model
+  }
+  - {
+    SLable: Freq_resp_tau,
+    corrType: UW,
+    measHeight: Height,
+    zeroPlaneDisp: zero_plane,
+    boundLyrHeight: 1000,
+    stability: MO_stability,
+    windSpeed: mean_Wind_Spd,
+    sen1FlowVelo: mean_Wind_Spd,
+    sen1SampFreq: sample_freq,
+    sen1PathLen: sonic_path,
+    sen1TimeConstant: 0.1,
+    sen2FlowVelo: mean_Wind_Spd,
+    sen2SampFreq: sample_freq,
+    sen2PathLen: sonic_path,
+    sen2TimeConstant: 0.1,
+    pathSepera: 0,
+    getSpecDataType: Model,
+    getRespFuncFrom: model
+  }
+
+plot_freq_resp:
+  - {LVal: Freq_resp_tau, RVal: Freq_resp_H}
+  - {LVal: Freq_resp_Fc, RVal: Freq_resp_LE}
+
+math_freq_oper:
+  - {SLable: Hc, operation: '*', measuredVarA: Freq_resp_H, measuredVarB: H}
+  - {SLable: cLEc, operation: '*', measuredVarA: Freq_resp_LE, measuredVarB: cLE}
+  - {SLable: bLEc, operation: '*', measuredVarA: Freq_resp_LE, measuredVarB: bLE}
+  - {SLable: Fcc, operation: '*', measuredVarA: Freq_resp_Fc, measuredVarB: Fc}
+
+plot_math_freq_oper:
+  - {LVal: Fc, RVal: Fcc, match: x}
+  - {LVal: H, RVal: Hc, match: x}
+  - {LVal: bLE, RVal: bLEc, match: x}
+  - {LVal: cLE, RVal: cLEc, match: x}
