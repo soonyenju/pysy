@@ -1,9 +1,21 @@
-from scigeo.geoface import Raster, Vector
-from scigeo.geobox import IDW
+from pysy.scigeo.geoface import Raster, Vector
+from pysy.scigeo.geobox import IDW
 from pathlib import Path
+from pysy.toolbox.sysutil import *
 import numpy as np
 
+def f(x):
+    return x * x
+
 def main():
+    # paral = Parallel()
+    # print(paral.pool)
+    # xs = range(1500)
+    # paral.imap_unordered_print(f, xs)
+    for i in range(100000):
+        pbar(i, 100000)
+
+def test_scigeo():
     lat_point_list = [50.854457, 52.518172, 50.072651, 48.853033, 50.854457]
     lon_point_list = [4.377184, 13.407759, 14.435935, 2.349553, 4.377184]
     coors = zip(lon_point_list, lat_point_list)
