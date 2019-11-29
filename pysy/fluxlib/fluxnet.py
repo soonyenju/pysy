@@ -124,6 +124,6 @@ class Fluxnet2015(object):
                 "lon": lon,
                 "values": df
             }
-            records["site_name"] = item
+            records[site_name] = item
         with open(savefile, "wb") as f:
             pickle.dump(records, f, protocol=pickle.HIGHEST_PROTOCOL)
