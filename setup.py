@@ -3,7 +3,7 @@
 
 #############################################
 # File Name: setup.py
-# Author: soonyenju
+# Author: Songyan Zhu
 # Mail: soonyenju@foxmail.com
 # Created Time:  2018-10-23 13:28:34
 #############################################
@@ -13,14 +13,14 @@ from setuptools import setup, find_packages
 
 setup(
 	name = "pysy",
-	version = "0.0.12",
+	version = "0.0.13",
 	keywords = ("pip", "geo-processing","GDAL", "raster-file", "shapefile", "soonyenju"),
 	description = "For faster proccessing geofile",
 	long_description = "Read/write and process rs/gis related data, especially atmospheric rs data.",
 	license = "MIT Licence",
 
 	url="https://github.com/soonyenju/pysy",
-	author = "soonyenju",
+	author = "Songyan Zhu",
 	author_email = "soonyenju@foxmail.com",
 
 	packages = find_packages(),
