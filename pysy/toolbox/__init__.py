@@ -1,2 +1,2 @@
 # __init__.py
-__all__ = ["sysutil"]
+__all__ = ["sysutil", "timeutil"]
