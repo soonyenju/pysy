@@ -8,6 +8,8 @@ author: Songyan Zhu, PhD student at University of Exeter, UK.
 ###### Quick start:
 installation:
 `pip install pysy`
+
+usage:
 ```
 >>> from pysy.scigee.geeface import *
 >>> from pysy.scigee.utilizes import *
