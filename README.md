@@ -1,11 +1,17 @@
-## Update: 2018-12-22
+## Update: 2019-12-01
+author: Songyan Zhu, PhD student at University of Exeter, UK.
 ###### content:
-* multiple platform compatibility
-* python 2.7 and python 3+ compatibility
-* re-add hdf4, but with compatibility
-* Python 2 supports will be deprecated in 2019.
-* 
-###### Tutorials:
+* scigeo: an easy interface of geographical data, raster and vector
+* sigee: wrapper of Python version apis for Google Earth Engine
+* fluxlib: Fluxnet 2015 dataset processor and libaries of pre- and post- prcessing for EddiRe.
+* toolbox: common tools
+###### Quick start:
+installation:
+`pip install pysy`
 ```
->>> from pysy import scigeo
+>>> from pysy.scigee.geeface import *
+>>> from pysy.scigee.utilizes import *
+>>> from pysy.scigee.config import *
+>>> from pysy.toolbox.sysutil import *
+>>> from pysy.toolbox.timeutil import *
 ```
