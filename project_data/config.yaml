@@ -1,0 +1,47 @@
+datasets:
+  modis:
+    - 
+      name: MODIS/006/MCD15A3H # 4-Day
+      band: 
+        - Fpar
+      # viz
+    -
+      name: MODIS/006/MOD13A1 # 16-Day
+      band: 
+        - NDVI
+    -
+      name: MODIS/006/MOD17A2H # 8-Day
+      band: 
+        - Gpp
+    -
+      name: MODIS/006/MCD12Q1 # yearly
+      band: 
+        - LC_Type1
+    -
+      name: MODIS/006/MCD43A3 # 1-Day
+      band: 
+        - Albedo_BSA_Band1
+    -
+      name: MODIS/006/MCD19A2_GRANULES # 1-Day
+      band: 
+        - Optical_Depth_047
+  cfsv2:
+    -
+      name: NOAA/CFSV2/FOR6H # 6-Hourly
+      band:
+        - Temperature_height_above_ground
+        - Downward_Short-Wave_Radiation_Flux_surface_6_Hour_Average
+        - Volumetric_Soil_Moisture_Content_depth_below_surface_layer_5_cm
+        - Maximum_specific_humidity_at_2m_height_above_ground_6_Hour_Interval
+        - Minimum_specific_humidity_at_2m_height_above_ground_6_Hour_Interval
+        - u-component_of_wind_height_above_ground
+        - v-component_of_wind_height_above_ground
+        - Precipitation_rate_surface_6_Hour_Average
+  strm:
+    -
+      name: CGIAR/SRTM90_V4 # year 2000
+      band: elevation
+
+  koppen:
+    -
+      dir: Beck_KG_V1/Beck_KG_V1_present_0p0083.tif

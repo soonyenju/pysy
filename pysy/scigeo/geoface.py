@@ -77,6 +77,7 @@ class Raster(object):
         return resampled_data
 
     def get_pntpairs(self, **kwargs):
+        # compatible with affine format, rather than geotransform
         if not kwargs:
             # print("Inside data")
             affine = self.profile["transform"]
@@ -85,8 +86,9 @@ class Raster(object):
             data = self.data.ravel()
         else:
             # print("Outside data")
+            # NOTICE: try to transform the geotransform to affine.
             affine = kwargs["affine"]
-            # NOTICE: the firs dimension of rasterio array is band.
+            # NOTICE: the first dimension of rasterio array is band.
             cols = kwargs["data"].shape[2]
             rows = kwargs["data"].shape[1]
             data = kwargs["data"].ravel()
