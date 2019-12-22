@@ -1,6 +1,7 @@
 import ee
 import numpy as np
 import requests, zipfile
+from pathlib import Path
 from pysy.toolbox.sysutil import *
 
 class Earth(object):
@@ -102,18 +103,22 @@ class Earth(object):
 		transform = (np.min(uniqueLons),xs,0,np.max(uniqueLats),0,-ys)
 		return {"array": array, "transform": transform}
 
-	def localize_image(self, image, savefolder, image_name = "temp", filename = "temp.zip", new_folder = False, crs_epsg = "4326", scale = 1000):    
+	def localize_image(self, image, savefolder, image_name = "temp", filename = "temp.zip", new_folder = False, zip_folder = None, crs_epsg = "4326", scale = 1000):    
 		url = image.getDownloadURL({'name': image_name, 'crs': 'EPSG:' + crs_epsg, 'scale': scale})
-
+		
+		if not isinstance(savefolder, Path):
+			savefolder = Path(savefolder)
+		filename = savefolder.joinpath(zip_folder).joinpath(filename)
+		create_all_parents(filename, flag = "f")
 		# print(url)
 
 		# Download the subset
 		r = requests.get(url, stream=True)
-		with open(filename, 'wb') as fd:
+		with open(filename.as_posix(), 'wb') as fd:
 			for chunk in r.iter_content(chunk_size = 1024):
 				fd.write(chunk)
 
 		# Extract the GeoTIFF for the zipped download
 		# z = zipfile.ZipFile(filename)
 		# z.extractall()
-		unzip(filename, savefolder, new_folder = new_folder, delete = True)
+		unzip(filename, savefolder, new_folder = new_folder, delete = False)

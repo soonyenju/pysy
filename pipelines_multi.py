@@ -13,6 +13,7 @@ import numbers
 import pandas as pd
 import numpy as np
 import pickle
+import multiprocessing
 
 def main():
     # with open(r"E:\workspace\OnProjects\pysy_project\temp_save\0_AR-SLu.pkl", "rb") as f:
@@ -30,14 +31,19 @@ def main():
 
     config = Yaml(cur_path.joinpath("config.yaml")).load()
     cfg_ds = config["datasets"]
-    montre = Montre() # process time and dates
 
     results = []
     # Each site
     for idx, (site_name, site_info) in enumerate(fluxnet.items()):
+        print(idx, site_name)
+        # save path for each site
+        save_site_dir = root_dir.joinpath("temp_save_multi").joinpath(f"{idx}_{site_name}.pkl")
+        if save_site_dir.exists():
+            print(f"file of {idx}_{site_name}.pkl alreay exists.")
+            continue
         each_site = {}
         each_site["name"] = site_name
-        print(idx, site_name)
+
         # print(site_info)
         lat = site_info["lat"]
         lon = site_info["lon"]
@@ -46,8 +52,8 @@ def main():
             lat = float(lat)
         if not isinstance(lon, numbers.Number):
             lon = float(lon)
-        lats = [int(lat) -1, int(lat) + 1]
-        lons = [int(lon) -1, int(lon) + 1]
+        lats = [int(lat) - 1, int(lat) + 1]
+        lons = [int(lon) - 1, int(lon) + 1]
         bounds = [lons[0], lats[0], lons[1], lats[1]]
         # pntpairs = list(product(lats, lons, repeat = 1)) # map each lat to each lon
         # lats, lons = list(zip(*pntpairs))
@@ -55,7 +61,7 @@ def main():
         flux_series = site_info["values"]
         flux_series["TIMESTAMP"] = flux_series["TIMESTAMP"].astype(str)
         # flux_series["TIMESTAMP"] = pd.to_datetime(flux_series["TIMESTAMP"])
-        save_folder = root_dir.joinpath("temp_save").joinpath(site_name)
+        save_folder = root_dir.joinpath("temp_save_multi").joinpath(site_name)
 
         climate = koppen_func(cur_path, config, bounds, lon, lat)
         each_site["climate"] = climate
@@ -64,50 +70,69 @@ def main():
         print(f"Climate type {climate}")
         print(f"Dem is {dem}")
 
+        # initialize multiprocessor
+        cores = multiprocessing.cpu_count()
+        pool = multiprocessing.Pool(processes=cores)
+        # map starmap parameters
+        rows_multi = [[idx/len(flux_series), row] for idx, row in flux_series.iterrows()]
+        cfg_ds_multi = [cfg_ds for idx in range(len(rows_multi))]
+        bounds_multi = [bounds for idx in range(len(rows_multi))]
+        lon_multi = [lon for idx in range(len(rows_multi))]
+        lat_multi = [lat for idx in range(len(rows_multi))]
+        save_folder_multi = [save_folder for idx in range(len(rows_multi))]
+        params_multi = zip(rows_multi, cfg_ds_multi, bounds_multi, lon_multi, lat_multi, save_folder_multi)
         all_day = []
         # Each day
-        for nrow, row in flux_series.iterrows():
-            each_day = []
-            date = row["TIMESTAMP"]
-            each_day.append(date)
-            each_day.append(row["GPP_NT_VUT_REF"])
-            print(row)
-            today = montre.to_date(date, format = r"%Y%m%d")
-            yesterday = montre.manage_time(today, days = -1)
-            today = montre.to_str(today)
-            yesterday = montre.to_str(yesterday)
-            date_range = [yesterday, today]
-            modis = cfg_ds["modis"]
-            # NOTICE: CHANGE date_range
-            # date_range = ["2008-01-01", "2008-1-31"]
-            #
-            for nds, dataset in enumerate(modis):
-                ds_name = dataset["name"]
-                band_list = dataset["band"]
-                
-                for band in band_list:
-                    res = gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder)
-                    print(band, date_range[1], res)
-                    each_day.append(res)
-            cfsv2 = cfg_ds["cfsv2"]
-            for nds, dataset in enumerate(cfsv2):
-                ds_name = dataset["name"]
-                band_list = dataset["band"]
-                
-                for band in band_list:
-                    res = gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder)
-                    print(band, date_range[1], res)
-                    each_day.append(res)
-            all_day.append(each_day)
-            # exit(0)
+        all_day = pool.starmap(get_eachday, list(params_multi))
+        # for nrow, row in flux_series.iterrows():
+        #     each_day = get_eachday(row, cfg_ds, bounds, lon, lat, save_folder)
+        #     all_day.append(each_day)
         each_site["values"] = all_day
         # save every site results
-        save_site_dir = root_dir.joinpath("temp_save").joinpath(f"{idx}_{site_name}.pkl")
         with open(save_site_dir.as_posix(), "wb") as f:
-            pickle.dump(each_site, f, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(each_site, f, protocol = pickle.HIGHEST_PROTOCOL)
     results.append(each_site)
     with open("alldata.pkl", "wb") as f:
-        pickle.dump(results, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(results, f, protocol = pickle.HIGHEST_PROTOCOL)
+
+def get_eachday(percent_row, cfg_ds, bounds, lon, lat, save_folder):
+    montre = Montre() # process time and dates
+    each_day = []
+    percent, row = percent_row
+    date = row["TIMESTAMP"]
+    each_day.append(date)
+    each_day.append(row["GPP_NT_VUT_REF"])
+    # print(row)
+    today = montre.to_date(date, format = r"%Y%m%d")
+    yesterday = montre.manage_time(today, days = -1)
+    today = montre.to_str(today)
+    yesterday = montre.to_str(yesterday)
+    date_range = [yesterday, today]
+    modis = cfg_ds["modis"]
+    # NOTICE: CHANGE date_range
+    # date_range = ["2008-01-01", "2008-1-31"]
+    #
+    for nds, dataset in enumerate(modis):
+        ds_name = dataset["name"]
+        band_list = dataset["band"]
+        
+        for band in band_list:
+            res = gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder)
+            print(f"{band}, {date_range[1]}, {res}")
+            each_day.append(res)
+    cfsv2 = cfg_ds["cfsv2"]
+    for nds, dataset in enumerate(cfsv2):
+        ds_name = dataset["name"]
+        band_list = dataset["band"]
+        
+        for band in band_list:
+            res = gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder)
+            print(f"{band}, {date_range[1]}, {res}")
+            each_day.append(res)
+    print(f"about {percent} is finished....")
+    return each_day
+    # exit(0)
+
 
 def gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder):
     earth = Earth(ds_name)
@@ -118,7 +143,9 @@ def gee_pipeline(ds_name, bounds, lon, lat, date_range, band, save_folder):
         earth.localize_image(
             image, 
             save_folder,
-            image_name = date_range[1]
+            image_name = date_range[1],
+            filename = f"temp_{str(np.random.randint(0, 1e5)).zfill(5)}.zip",
+            zip_folder = f"temp_delete"
             )
         save_path = save_folder.joinpath(f"{date_range[1]}.{band}.tif")
         ras = Raster(save_path)
@@ -144,7 +171,9 @@ def strm_func(site_name, bounds, lon, lat, save_folder):
         srtm.localize_image(
             image, 
             save_folder,
-            image_name = site_name
+            image_name = site_name,
+            filename = f"temp_{str(np.random.randint(0, 1e5)).zfill(5)}.zip",
+            zip_folder = f"temp_delete"
             )
         save_path = save_folder.joinpath(f"{site_name}.{band}.tif")
         ras = Raster(save_path)
@@ -175,13 +204,20 @@ def koppen_func(path, config, bounds, lon, lat):
     vec = Vector()
     poly = vec.create_polygon(coors)
 
-    ras.clip(poly.geometry)
-    # print(ras.clip_arr.shape)
-    pntpairs, values = ras.get_pntpairs(affine = ras.clip_transform, data = ras.clip_arr)
+    try:
+        ras.clip(poly.geometry)
+        pntpairs, values = ras.get_pntpairs(affine = ras.clip_transform, data = ras.clip_arr)
+        idw = IDW(pntpairs, values)
+        res = idw([lon, lat])
+        return res[0]
+    except Exception as e:
+        print(f"{e}")
+        py, px = ras.src.index(lon, lat)
+        array = ras.read()["array"]
+        res = array[:, py, px]
+        return res[0]
 
-    idw = IDW(pntpairs, values)
-    res = idw([lon, lat])
-    return res[0]
+
 
 
 """

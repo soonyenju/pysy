@@ -26,14 +26,17 @@ class Yaml(object):
             yaml.dump(data_dict, f, default_flow_style = False)
 
 # extract a .zip (p) into a folder at tar_dir of a name p.stem
-def unzip(p, tar_dir, new_folder = True, delete = False):
+def unzip(p, tar_dir, new_folder = True, folder_name = None, delete = False):
     # print(p)
     if not isinstance(p, Path):
         p = Path(p)
     if not isinstance(tar_dir, Path):
         tar_dir = Path(tar_dir)
     if new_folder:
-        out_dir = tar_dir.joinpath(p.stem)
+        if not folder_name:
+            out_dir = tar_dir.joinpath(p.stem)
+        else:
+            out_dir = tar_dir.joinpath(folder_name)
     else:
         out_dir = tar_dir
     # if not out_dir.exists(): out_dir.mkdir()
@@ -45,14 +48,20 @@ def unzip(p, tar_dir, new_folder = True, delete = False):
 
 # if parent or grand parent dirs not exist, 
 # make them including current dir (if its not a file)
-def create_all_parents(directory):
+def create_all_parents(directory, flag = "a"):
+    # flag: if directory is a dir ("d") or file ("f") or automatically desice ("a")
     if not isinstance(directory, Path):
         directory = Path(directory)
     parents = list(directory.parents)
     parents.reverse()
     # NOTICE: sometimes is_dir returns false, e.g., a dir of onedrive
-    if not directory.is_file():
+    if flag == "a":
+        if not directory.is_file():
+            parents.append(directory)
+    elif flag == "d":
         parents.append(directory)
+    else:
+        pass
     for p in parents:
       if not p.exists():
         p.mkdir()
