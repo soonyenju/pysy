@@ -5,8 +5,9 @@ from pathlib import Path
 from pysy.toolbox.sysutil import *
 
 class Earth(object):
-	def __init__(self, ds_name, collection = True):
+	def __init__(self, ds_name, collection = True, MUTE = True):
 		super()
+		self.MUTE = MUTE
 		ee.Initialize()
 		if collection:
 			self.image_collection = ee.ImageCollection(ds_name)
@@ -25,7 +26,7 @@ class Earth(object):
 			image = image_collection.map(
 				lambda image: image.reduce(ee.Reducer.mean())
 				).reduce(ee.Reducer.median()).rename(label)
-		print("retrieved images...")
+		if not self.MUTE: print("retrieved images...")
 		return image
 	
 	def retrievel_single_image(self, band):
@@ -40,13 +41,13 @@ class Earth(object):
 		if isinstance(bounds, list):
 			if np.array(bounds).ndim == 1:
 				area = ee.Geometry.Rectangle(bounds)
-				print("bounds are a rectangle list...")
+				if not self.MUTE: print("bounds are a rectangle list...")
 			else:
 				area = ee.Geometry.Polygon(bounds)
-				print("bounds are a polygon list...")
+				if not self.MUTE: print("bounds are a polygon list...")
 		else:
 			area = bounds
-			print("bounds are a pre-defined ee region...")
+			if not self.MUTE: print("bounds are a pre-defined ee region...")
 		image = image.clip(area)
 		latlng = ee.Image.pixelLonLat().addBands(image)
 		latlng = latlng.reduceRegion(
@@ -70,7 +71,7 @@ class Earth(object):
 				f"lats shape is {self.lats.shape}, " + 
 				f"lons shape is {self.lons.shape}."
 			)
-		print("retrieved data...")
+		if not self.MUTE: print("retrieved data...")
 
 
 	def to_2d_tif(self):

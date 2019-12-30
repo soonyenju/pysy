@@ -45,3 +45,12 @@ datasets:
   koppen:
     -
       dir: Beck_KG_V1/Beck_KG_V1_present_0p0083.tif
+
+my_sites:
+  - BE-Bra
+  - BE-Lon
+  - BE-Vie
+  - DE-RuR
+  - DE-Seh
+  - NL-Hor
+  - NL-Loo
