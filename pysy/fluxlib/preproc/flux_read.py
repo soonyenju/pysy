@@ -91,16 +91,16 @@ class Flux_reader(object):
                 yield df   
 
 
-"""
-example:
-"""
-def main():
-    path = "data_ghg"
-    flux_read = Flux_reader(path, MUTE = False)
-    dfs = flux_read(data_type = "ghg")
-    for i, df in enumerate(dfs):
-        # print(df)
-        df.to_csv("ghg_" + str(i).zfill(3) + ".csv")
+# """
+# example:
+# """
+# def main():
+#     path = "data_ghg"
+#     flux_read = Flux_reader(path, MUTE = False)
+#     dfs = flux_read(data_type = "ghg")
+#     for i, df in enumerate(dfs):
+#         # print(df)
+#         df.to_csv("ghg_" + str(i).zfill(3) + ".csv")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
