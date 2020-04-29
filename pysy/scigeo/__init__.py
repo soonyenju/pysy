@@ -1,6 +1,6 @@
 # coding: utf-8
 __all__ = ["gdal_wrapper", "geobox", "geoface"]
 
-# from gdal_wrapper import *
-# from geobox import *
-# from geoface import *
+# from pysy.scigeo.gdal_wrapper import *
+# from pysy.scigeo.geobox import *
+# from pysy.scigeo.geoface import *

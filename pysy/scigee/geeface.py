@@ -13,6 +13,63 @@ class Earth(object):
 			self.image_collection = ee.ImageCollection(ds_name)
 		else:
 			self.image = ee.Image(ds_name)
+   
+	def filter_by_date_bounds(self, date_range, area_coordinates_list = []):
+		start_date, end_date = date_range
+		image_collection = self.image_collection.filterDate(start_date, end_date)
+		if area_coordinates_list:
+			roi = ee.Geometry.Polygon(area_coordinates_list)
+			image_collection = image_collection.filterBounds(roi)
+		return image_collection
+
+	def collection_to_image_list(self, image_collection):
+		self.image_list = image_collection.toList(image_collection.size())
+		self.__length__ = image_collection.size().getInfo()
+		return self.image_list
+
+	def get_image_by_order(self, image_list, order):
+		return ee.Image(image_list.get(order))
+
+	def get_image_band_names(self, image):
+		return image.bandNames().getInfo()
+
+	def get_image_proj_scale(self, image, band):
+		# // Get projection information from band.
+		proj = image.select(band).projection()
+
+		# // Get scale (in meters) information from band.
+		scale = image.select(band).projection().nominalScale()
+		return proj.getInfo(), scale.getInfo()
+
+	def reproject(self, image, proj):
+		return image.reproject(proj)
+
+	def get_point_value(self, image, band, coors = None, lon = None, lat = None, scale = 10):
+		if coors:
+			lon, lat = coors
+		assert lon, "No longitude input..."
+		assert lat, "No latitude input..."
+		point = ee.Geometry.Point(lon, lat)
+		value = image.select(band).reduceRegion(ee.Reducer.first(), point, scale).get(band)
+		value = ee.Number(value)
+		return value.getInfo()
+  
+	def create_point_buffer(self, lon, lat, buffer_size = 100):
+		return ee.Geometry.Point(lon,lat).buffer(buffer_size)
+  
+	def average_collection(self, image_collection, label = "DATA", band_select = None):
+		if band_select:
+			image = image_collection.select(band_select).reduce(ee.Reducer.median()).rename(label)
+		else:
+			image = image_collection.map(
+				lambda image: image.reduce(ee.Reducer.mean())
+				).reduce(ee.Reducer.median()).rename(label)
+		return image
+
+	def mask_by_value(self, image, value = -9999):
+		mask = image.eq(value)
+		image = image.updateMask(mask)
+		return image
 
 	def filter_image(self, date_range, label = "DATA", band_select = None, area_coordinates_list = []):
 		start_date, end_date = date_range
@@ -49,6 +106,7 @@ class Earth(object):
 			area = bounds
 			if not self.MUTE: print("bounds are a pre-defined ee region...")
 		image = image.clip(area)
+		image = image.unmask(ee.Image.constant(-9999))
 		latlng = ee.Image.pixelLonLat().addBands(image)
 		latlng = latlng.reduceRegion(
 			reducer=ee.Reducer.toList(), 

@@ -12,11 +12,11 @@ if __name__ == "__main__":
     if args.pipreq:
         print("checking requirements...")
         os.system("pipreqs ./ --encoding=utf-8")
-    # publish_folders = [
-    #     "build",
-    #     "dist",
-    #     "pysy.egg-info"
-    # ]
+    publish_folders = [
+        "build",
+        "dist",
+        "pysy.egg-info"
+    ]
     print("checking dirs...")
     cur_dirs = os.listdir()
     # build   
@@ -28,6 +28,7 @@ if __name__ == "__main__":
     if args.pipreq:
         print("clearing up...")
         new_dirs = [p for p in os.listdir() if p not in cur_dirs]
+        new_dirs = publish_folders
         for p in new_dirs:
             # print(p)
             shutil.rmtree(p)

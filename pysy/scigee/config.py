@@ -53,3 +53,11 @@ vis_params_dict = {
       "palette": ["blue", "purple", "cyan", "green", "yellow", "red"]
     }
 }
+
+palettes = {
+  "green": [
+        'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
+        '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
+        '012E01', '011D01', '011301'
+      ]
+}
