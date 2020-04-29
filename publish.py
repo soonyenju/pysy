@@ -12,11 +12,11 @@ if __name__ == "__main__":
     if args.pipreq:
         print("checking requirements...")
         os.system("pipreqs ./ --encoding=utf-8")
-    publish_folders = [
-        "build",
-        "dist",
-        "pysy.egg-info"
-    ]
+    # publish_folders = [
+    #     "build",
+    #     "dist",
+    #     "pysy.egg-info"
+    # ]
     print("checking dirs...")
     cur_dirs = os.listdir()
     # build   
@@ -25,10 +25,10 @@ if __name__ == "__main__":
     # push
     os.system("twine upload --repository-url https://upload.pypi.org/legacy/ dist/*")
     print("package is publised...")
-    if args.pipreq:
+    if args.clean:
         print("clearing up...")
         new_dirs = [p for p in os.listdir() if p not in cur_dirs]
-        new_dirs = publish_folders
+        # new_dirs = publish_folders
         for p in new_dirs:
             # print(p)
             shutil.rmtree(p)
