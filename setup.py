@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name = "pysy",
-	version = "0.0.18",
+	version = "0.0.19",
 	keywords = ("easy geo warpper", "atmospheric data","satellite data", "flux"),
 	description = "For faster proccessing geofile",
 	long_description = "Read/write and process rs/gis related data, especially atmospheric rs data.",
@@ -34,6 +34,8 @@ setup(
             # "Shapely==1.6.4.post1",
             # "rasterio==1.0.21",
             # "numpy==1.16.0",
+			"geopandas",
+			"rasterio"
 
 	]
 )
