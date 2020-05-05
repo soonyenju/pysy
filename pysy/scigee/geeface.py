@@ -246,6 +246,18 @@ class VI(object):
         return image.addBands(evi.rename("EVI"))
 
     @staticmethod
+    def calc_ndi(image, **kwargs):
+        band_a = kwargs["b1"]
+        band_b = kwargs["b2"]
+
+        ndi = image.expression(
+            '(band_a - band_b) / (band_a + band_b)', {
+            'band_a': image.select(band_a),
+            'band_b': image.select(band_b)
+        })
+        return image.addBands(ndi.rename("NDI"))
+
+    @staticmethod
     def calc_cire(image, **kwargs):
         re2 = kwargs["re2"]
         re3 = kwargs["re3"]
