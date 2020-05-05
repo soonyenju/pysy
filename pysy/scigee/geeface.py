@@ -228,6 +228,8 @@ class VI(object):
             image = self.calc_evi(image, **kwargs)
         elif vi == "cire":
             image = self.calc_cire(image, **kwargs)
+        elif vi == "ndi":
+            image = self.calc_ndi(image, **kwargs)
 
         return image
 
