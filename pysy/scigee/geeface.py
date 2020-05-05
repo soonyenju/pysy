@@ -255,7 +255,11 @@ class VI(object):
             'band_a': image.select(band_a),
             'band_b': image.select(band_b)
         })
-        return image.addBands(ndi.rename("NDI"))
+        if "label" in kwargs.keys():
+            label = kwargs["label"]
+        else:
+            label = "NDI"
+        return image.addBands(ndi.rename(label))
 
     @staticmethod
     def calc_cire(image, **kwargs):
