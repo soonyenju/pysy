@@ -80,11 +80,9 @@ class Montre(object):
 
 class Yaml(object):
     def __init__(self, path):
-        if isinstance(path, str):
-            path = Path(path)
-        self.path = path
         if isinstance(path, Path):
-            self.path = self.path.as_posix() 
+            path = path.as_posix() 
+        self.path = path
 
     def load(self):
         with open(self.path, "r") as stream:
