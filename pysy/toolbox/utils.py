@@ -80,7 +80,8 @@ class Montre(object):
 
 class Yaml(object):
     def __init__(self, path):
-        super()
+        if isinstance(path, str):
+            path = Path(path)
         self.path = path
         if isinstance(path, Path):
             self.path = self.path.as_posix() 
