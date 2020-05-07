@@ -1,2 +1,2 @@
 # coding: utf-8
-__all__ = ["geo"]
+__all__ = ["geo", "sun"]
